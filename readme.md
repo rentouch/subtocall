@@ -4,7 +4,7 @@
 ![overview](https://github.com/rentouch/subtocall/raw/master/doc/overview.png)
 
 This server will check crossbar for registrations which have a defined pattern:
-*com.x.y.SUB_z*. The last part of the uri has to start with 'SUB_'.
+**com.x.y.SUB_z**. The last part of the uri has to start with 'SUB_'.
 
 
 ## Why
@@ -24,7 +24,7 @@ introduce a (new) bottle-neck with this 'forwarder' / server.
 
 
 ## Installation
-*Only works with Python3.x*
+**Only works with Python3.x**
 * pip install -r requirements.txt
 
 
