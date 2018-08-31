@@ -1,6 +1,6 @@
 # SubToCall - allows shared subscriptions in crossbar / WAMP
 
-## How does it work
+## How it does work
 ![overview](https://github.com/rentouch/subtocall/raw/master/doc/overview.png)
 
 This server will check crossbar for registrations which have a defined pattern:
