@@ -1,5 +1,10 @@
 # SubToCall - allows shared subscriptions in crossbar / WAMP
 
+### Attention
+This is customized to fit the needs of rentouch. Therefore it has hard-coded
+uri patterns inside.
+
+
 ## How it does work
 ![overview](https://github.com/rentouch/subtocall/raw/master/doc/overview.png)
 

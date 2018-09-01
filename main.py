@@ -48,43 +48,38 @@ class MyComponent(ApplicationSession):
                         self.start_track(reg_id, reg['uri'])
         yield self.subscribe(self.on_create, 'wamp.registration.on_create')
         yield self.subscribe(self.on_delete, 'wamp.registration.on_delete')
+
+        # Subscribe to all events
+        yield self.subscribe(
+            self.sub_to_call,
+            topic='ch.rentouch.piplanning.6',
+            options=SubscribeOptions(match=u"prefix",
+                                     details_arg='wamp_details'))
         log.debug("Subscribed to wamp procedure")
 
     @inlineCallbacks
     def on_create(self, _, create_info):
         uri = create_info['uri']
         if self.matches_pattern(uri):
-            yield self.start_track(create_info['id'], uri)
+            self.start_track(create_info['id'], uri)
 
     @inlineCallbacks
     def on_delete(self, _, reg_id):
-        yield self.stop_track(reg_id)
+        self.stop_track(reg_id)
 
-    @inlineCallbacks
     def start_track(self, reg_id, target_uri):
         reg = {'reg_id': reg_id,
                'target_uri': target_uri,
-               'source_uri': target_uri.replace('SUB_', '')}
+               'main_topic': target_uri.split('.')[-2],
+               'procedure': target_uri.split('.')[-1].replace('SUB_', '')}
         self.subscriptions.append(reg)
-        log.debug('start tracking %s %s' % (reg_id, reg['source_uri']))
-        try:
-            reg['registration'] = yield self.subscribe(
-                self.sub_to_call,
-                topic=reg['source_uri'],
-                options=SubscribeOptions(match=u"wildcard", details_arg='wamp_details'))
-        except Exception as e:
-            log.exception(e)
+        log.debug('start tracking %s %s' % (reg_id, reg['target_uri']))
 
-    @inlineCallbacks
     def stop_track(self, reg_id):
         for reg in self.subscriptions[:]:
             if reg["reg_id"] == reg_id:
                 self.subscriptions.remove(reg)
-                log.debug("stop tracking %s %s" % (reg_id, reg['source_uri']))
-                try:
-                    yield reg['registration'].unsubscribe()
-                except Exception as e:
-                    log.warning(e)
+                log.debug("stop tracking %s %s" % (reg_id, reg['target_uri']))
                 break
 
     @inlineCallbacks
@@ -92,12 +87,40 @@ class MyComponent(ApplicationSession):
         try:
             wamp_details = kwargs.pop('wamp_details')
             source_uri = wamp_details.topic
-            split_pos = source_uri.find(source_uri.split('.')[-1])
-            target_uri = '{0}SUB_{1}'.format(source_uri[:split_pos],
-                                             source_uri[split_pos:])
-            # log.debug("-> %s, %s, %s" % (target_uri, args, kwargs))
-            yield self.call(target_uri, *args, **kwargs)
+            topic_parts = source_uri.split('.')
+            company = topic_parts[5]
+            procedure = topic_parts[-1]
+            if len(topic_parts) == 9:
+                main_topic = 'board'
+            elif len(topic_parts) == 8:
+                main_topic = 'session'
+            else:
+                returnValue(False)
+
+            part_id = topic_parts[-2]
+            for sub in self.subscriptions:
+                if sub['main_topic'] == main_topic and \
+                        sub['procedure'] == procedure:
+                    # Construct target uri
+                    target_uri = sub['target_uri']
+                    split_pos = target_uri.find('..') + 1
+                    target_uri = '{0}{1}{2}'.format(
+                        target_uri[:split_pos], company,
+                        target_uri[split_pos:])
+
+                    # Call target uri with arguments
+                    # log.debug("-> %s, %s %s, %s" %
+                    #           (target_uri, part_id, args, kwargs))
+                    if main_topic == 'board':
+                        yield self.call(target_uri,
+                                        *args, board_id=part_id, **kwargs)
+                    else:
+                        yield self.call(target_uri,
+                                        *args, session_id=part_id, **kwargs)
+                    break
         except ApplicationError as e:
+            log.debug("-> %s, %s %s, %s" %
+                      (target_uri, part_id, args, kwargs))
             log.warning(e)
         except Exception as e:
             log.exception(e)
