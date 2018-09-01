@@ -23,7 +23,7 @@ class MyComponent(ApplicationSession):
 
     def __init__(self, config):
         ApplicationSession.__init__(self, config)
-        self.registrations = []
+        self.subscriptions = []
 
     def onConnect(self):
         transport_factory.resetDelay()
@@ -50,32 +50,36 @@ class MyComponent(ApplicationSession):
         yield self.subscribe(self.on_delete, 'wamp.registration.on_delete')
         log.debug("Subscribed to wamp procedure")
 
+    @inlineCallbacks
     def on_create(self, _, create_info):
         uri = create_info['uri']
         if self.matches_pattern(uri):
-            self.start_track(create_info['id'], uri)
+            yield self.start_track(create_info['id'], uri)
 
+    @inlineCallbacks
     def on_delete(self, _, reg_id):
-        self.stop_track(reg_id)
+        yield self.stop_track(reg_id)
 
+    @inlineCallbacks
     def start_track(self, reg_id, target_uri):
         reg = {'reg_id': reg_id,
                'target_uri': target_uri,
                'source_uri': target_uri.replace('SUB_', '')}
-        self.registrations.append(reg)
+        self.subscriptions.append(reg)
         log.debug('start tracking %s %s' % (reg_id, reg['source_uri']))
         try:
-            reg['registration'] = self.subscribe(
+            reg['registration'] = yield self.subscribe(
                 self.sub_to_call,
                 topic=reg['source_uri'],
                 options=SubscribeOptions(match=u"wildcard", details_arg='wamp_details'))
         except Exception as e:
             log.exception(e)
 
+    @inlineCallbacks
     def stop_track(self, reg_id):
-        for reg in self.registrations[:]:
+        for reg in self.subscriptions[:]:
             if reg["reg_id"] == reg_id:
-                self.registrations.remove(reg)
+                self.subscriptions.remove(reg)
                 log.debug("stop tracking %s %s" % (reg_id, reg['source_uri']))
                 try:
                     yield reg['registration'].unsubscribe()
