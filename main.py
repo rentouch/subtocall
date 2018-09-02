@@ -101,6 +101,9 @@ class MyComponent(ApplicationSession):
             for sub in self.subscriptions:
                 if sub['main_topic'] == main_topic and \
                         sub['procedure'] == procedure:
+                    # Make sure that we pass the origin of the request
+                    from_backend = (wamp_details.publisher_authrole == 'backend')
+
                     # Construct target uri
                     target_uri = sub['target_uri']
                     split_pos = target_uri.find('..') + 1
@@ -109,14 +112,16 @@ class MyComponent(ApplicationSession):
                         target_uri[split_pos:])
 
                     # Call target uri with arguments
-                    # log.debug("-> %s, %s %s, %s" %
-                    #           (target_uri, part_id, args, kwargs))
+                    # log.debug("-> %s, %s %s, %s, backend=%s" %
+                    #           (target_uri, part_id, args, kwargs, from_backend))
                     if main_topic == 'board':
                         yield self.call(target_uri,
-                                        *args, board_id=part_id, **kwargs)
+                                        *args, board_id=part_id,
+                                        from_backend=from_backend, **kwargs)
                     else:
                         yield self.call(target_uri,
-                                        *args, session_id=part_id, **kwargs)
+                                        *args, session_id=part_id,
+                                        from_backend=from_backend, **kwargs)
                     break
         except ApplicationError as e:
             log.debug("-> %s, %s %s, %s" %
