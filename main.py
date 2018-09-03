@@ -112,8 +112,8 @@ class MyComponent(ApplicationSession):
                         target_uri[split_pos:])
 
                     # Call target uri with arguments
-                    # log.debug("-> %s, %s %s, %s, backend=%s" %
-                    #           (target_uri, part_id, args, kwargs, from_backend))
+                    log.debug("-> %s, %s %s, %s, backend=%s" %
+                              (target_uri, part_id, args, kwargs, from_backend))
                     if main_topic == 'board':
                         yield self.call(target_uri,
                                         *args, board_id=part_id,

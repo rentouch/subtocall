@@ -1,0 +1,6 @@
+venv
+.git
+.gitignore
+.cache
+.idea
+data

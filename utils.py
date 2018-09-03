@@ -1,7 +1,7 @@
 import os
 
 # URL to crossbar
-WAMP_URL = os.getenv('WAMP_URL', 'crossbar')
+WAMP_URL = os.getenv('WAMP_URL', 'ws://crossbar')
 
 # crossbar realm
 CROSSBAR_REALM = os.getenv('REALM', 'realm1')
