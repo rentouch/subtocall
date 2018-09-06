@@ -52,7 +52,7 @@ class MyComponent(ApplicationSession):
         # Subscribe to all events
         yield self.subscribe(
             self.sub_to_call,
-            topic='ch.rentouch.piplanning.6',
+            topic='ch.rentouch.piplanning',
             options=SubscribeOptions(match=u"prefix",
                                      details_arg='wamp_details'))
         log.debug("Subscribed to wamp procedure")
@@ -112,8 +112,8 @@ class MyComponent(ApplicationSession):
                         target_uri[split_pos:])
 
                     # Call target uri with arguments
-                    log.debug("-> %s, %s %s, %s, backend=%s" %
-                              (target_uri, part_id, args, kwargs, from_backend))
+                    # log.debug("-> %s, %s %s, %s, backend=%s" %
+                    #           (target_uri, part_id, args, kwargs, from_backend))
                     if main_topic == 'board':
                         yield self.call(target_uri,
                                         *args, board_id=part_id,
