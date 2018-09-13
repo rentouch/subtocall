@@ -1,3 +1,5 @@
+import pickle
+
 import log
 from autobahn.twisted.wamp import ApplicationSession
 from twisted.internet.protocol import ReconnectingClientFactory
@@ -13,7 +15,8 @@ from utils import WAMP_URL
 from utils import BACKEND_SECRET
 from utils import BACKEND_USERNAME
 from utils import CROSSBAR_REALM
-
+from utils import USE_REDIS_MSQ
+from rqueue import queue
 log = log.init_logger(use_logstash=False)
 
 log.info("***** SubToCall started *****")
@@ -111,17 +114,27 @@ class MyComponent(ApplicationSession):
                         target_uri[:split_pos], company,
                         target_uri[split_pos:])
 
-                    # Call target uri with arguments
-                    # log.debug("-> %s, %s %s, %s, backend=%s" %
-                    #           (target_uri, part_id, args, kwargs, from_backend))
-                    if main_topic == 'board':
-                        yield self.call(target_uri,
-                                        *args, board_id=part_id,
-                                        from_backend=from_backend, **kwargs)
+                    if USE_REDIS_MSQ:
+                        data = {'procedure': procedure,
+                                'target_uri': target_uri,
+                                'main_topic': main_topic,
+                                'args': args,
+                                'board_id': part_id,
+                                'from_backend': from_backend,
+                                'kwargs': kwargs}
+                        yield queue.put(main_topic, pickle.dumps(data))
                     else:
-                        yield self.call(target_uri,
-                                        *args, session_id=part_id,
-                                        from_backend=from_backend, **kwargs)
+                        # Call target uri with arguments
+                        # log.debug("-> %s, %s %s, %s, backend=%s" %
+                        #           (target_uri, part_id, args, kwargs, from_backend))
+                        if main_topic == 'board':
+                            yield self.call(
+                                target_uri, *args, board_id=part_id,
+                                from_backend=from_backend, **kwargs)
+                        else:
+                            yield self.call(
+                                target_uri, *args, session_id=part_id,
+                                from_backend=from_backend, **kwargs)
                     break
         except ApplicationError as e:
             log.debug("-> %s, %s %s, %s" %

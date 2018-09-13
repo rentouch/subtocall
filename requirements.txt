@@ -4,3 +4,4 @@ pyOpenSSL==16.2.0
 service-identity==14.0.0
 python-logstash
 coloredlogs==7.1
+txredisapi==1.4.4

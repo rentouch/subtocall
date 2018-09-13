@@ -13,7 +13,7 @@ def init_logger(use_logstash=True):
             super(CustomLogger, self)._log(level, msg, args, exc_info, extra)
 
     logging.setLoggerClass(CustomLogger)
-    log = logging.getLogger('PIPlanningServer')
+    log = logging.getLogger('subtocall')
     log.setLevel(logging.DEBUG)
     if use_logstash:
         log.addHandler(logstash.TCPLogstashHandler('bla.com', 5000,
