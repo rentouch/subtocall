@@ -15,7 +15,7 @@ from utils import WAMP_URL
 from utils import BACKEND_SECRET
 from utils import BACKEND_USERNAME
 from utils import CROSSBAR_REALM
-from utils import USE_REDIS_MSQ
+from utils import USE_REDIS_MQ
 from rqueue import queue
 log = log.init_logger(use_logstash=False)
 
@@ -114,7 +114,7 @@ class MyComponent(ApplicationSession):
                         target_uri[:split_pos], company,
                         target_uri[split_pos:])
 
-                    if USE_REDIS_MSQ:
+                    if USE_REDIS_MQ:
                         data = {'procedure': procedure,
                                 'target_uri': target_uri,
                                 'main_topic': main_topic,
