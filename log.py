@@ -2,8 +2,9 @@ import os
 import sys
 import logging
 import logstash
-
 import coloredlogs
+from utils import LOGSTASH_PORT
+from utils import LOGSTASH_HOST
 
 
 def init_logger(use_logstash=True):
@@ -16,8 +17,8 @@ def init_logger(use_logstash=True):
     log = logging.getLogger('subtocall')
     log.setLevel(logging.DEBUG)
     if use_logstash:
-        log.addHandler(logstash.TCPLogstashHandler('bla.com', 5000,
-                                                   version=1))
+        log.addHandler(logstash.TCPLogstashHandler(
+            LOGSTASH_HOST, LOGSTASH_PORT, version=1))
 
     formatter = logging.Formatter(
         "%(asctime)s [%(levelname)-8s] %(module)s%(lineno)-3s %(message)s")

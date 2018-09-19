@@ -5,3 +5,4 @@ service-identity==14.0.0
 python-logstash
 coloredlogs==7.1
 txredisapi==1.4.4
+prometheus_async[twisted]==18.3.0

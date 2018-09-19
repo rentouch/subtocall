@@ -17,7 +17,8 @@ from utils import BACKEND_USERNAME
 from utils import CROSSBAR_REALM
 from utils import USE_REDIS_MQ
 from rqueue import queue
-log = log.init_logger(use_logstash=False)
+log = log.init_logger(use_logstash=True)
+from metrics import REDIS_PUSHS
 
 log.info("***** SubToCall started *****")
 
@@ -93,6 +94,7 @@ class MyComponent(ApplicationSession):
             topic_parts = source_uri.split('.')
             company = topic_parts[5]
             procedure = topic_parts[-1]
+            api_version = topic_parts[3]
             if len(topic_parts) == 9:
                 main_topic = 'board'
             elif len(topic_parts) == 8:
@@ -119,10 +121,16 @@ class MyComponent(ApplicationSession):
                                 'target_uri': target_uri,
                                 'main_topic': main_topic,
                                 'args': args,
-                                'board_id': part_id,
                                 'from_backend': from_backend,
                                 'kwargs': kwargs}
-                        yield queue.put(main_topic, pickle.dumps(data))
+                        if main_topic == 'board':
+                            data['kwargs']['board_id'] = part_id
+                        else:
+                            data['kwargs']['session_id'] = part_id
+                        r_key = '%s_%s' % (api_version, main_topic)
+                        yield queue.put(r_key,
+                                        pickle.dumps(data))
+                        REDIS_PUSHS.inc()
                     else:
                         # Call target uri with arguments
                         # log.debug("-> %s, %s %s, %s, backend=%s" %

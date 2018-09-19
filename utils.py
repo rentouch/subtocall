@@ -10,6 +10,10 @@ CROSSBAR_REALM = os.getenv('REALM', 'realm1')
 BACKEND_USERNAME = os.getenv('BACKEND_USERNAME', 'backend')
 BACKEND_SECRET = os.getenv('BACKEND_SECRET', '1234')
 
+# Logstash host and port (TCP)
+LOGSTASH_HOST = os.getenv('LOGSTASH_HOST', 'logstash.logging')
+LOGSTASH_PORT = os.getenv('LOGSTASH_PORT', 5001)
+
 # If you want to use the redis message-queue instead of the wamp load-balancer
 USE_REDIS_MQ = os.getenv('USE_REDIS_MQ', False)
 
