@@ -16,7 +16,7 @@ Having multiple backend-server instances also allow rolling upgrades without
 any downtime.
 
 ## How it does work
-![overview](https://github.com/rentouch/subtocall/raw/master/doc/overview.png)
+![overview](https://github.com/rentouch/subtocall/raw/master/doc/overview1.png)
 
 This server will check crossbar for registrations which have a defined pattern:
 **com.x.y.SUB_z**. The last part of the uri has to start with 'SUB_'.
