@@ -127,7 +127,7 @@ class MyComponent(ApplicationSession):
                             data['kwargs']['board_id'] = part_id
                         else:
                             data['kwargs']['session_id'] = part_id
-                        r_key = '%s_%s' % (api_version, main_topic)
+                        r_key = '%s_%s' % (api_version, 'piserver')
                         yield queue.put(r_key,
                                         pickle.dumps(data))
                         REDIS_PUSHS.inc()
