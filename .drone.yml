@@ -1,0 +1,27 @@
+kind: pipeline
+name: default
+
+clone:
+  depth: 50
+
+steps:
+  - name: fetch
+    image: docker:git
+    commands:
+    - git fetch --tags
+
+  - name: generate-build-tags
+    image: jegger/drone-build-tag:0.0.3
+    pull: true
+    commands:
+      - build-tags.sh --py-module version
+
+  - name: harbor-push
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      registry: harbor.piplanning.io
+      repo: harbor.piplanning.io/k8sprod/subtocall
