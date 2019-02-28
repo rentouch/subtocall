@@ -6,6 +6,7 @@
 NAME="pi-subtocall"
 HUB="harbor.piplanning.io"
 prod_flag=false
+on_prem_flag=false
 username='rt-uploader'
 password=''
 
@@ -14,11 +15,13 @@ print_usage() {
   printf " -s  Push to stable/production project (by default it pushes to test)\n"
   printf " -u  Username for docker repo (default is rt-uploader) \n"
   printf " -p  Password to docker repository \n"
+  printf " -o  Push to on-premise docker-repository (default is test or production, see: -s) \n"
 }
 
-while getopts 'su:p:' flag; do
+while getopts 'sou:p:' flag; do
   case "${flag}" in
     s) prod_flag=true ;;
+    o) on_prem_flag=true ;;
     u) username="${OPTARG}" ;;
     p) password="${OPTARG}" ;;
     *) print_usage
@@ -39,7 +42,9 @@ PROJECT="test"
 if [ "$prod_flag" = true ] ; then
     PROJECT="k8sprod"
 fi
-
+if [ "$on_prem_flag" = true ] ; then
+    PROJECT="pip"
+fi
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 VERSION="$(cd $DIR/../ && python -c 'import version; print version.__version__')"
