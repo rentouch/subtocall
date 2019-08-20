@@ -1,13 +1,11 @@
 import os
 import sys
 import logging
-import logstash
 import coloredlogs
-from utils import LOGSTASH_PORT
-from utils import LOGSTASH_HOST
+from utils import COLORED_LOGS
 
 
-def init_logger(use_logstash=True):
+def init_logger():
     class CustomLogger(logging.Logger):
 
         def _log(self, level, msg, args, exc_info=None, extra=None):
@@ -16,19 +14,16 @@ def init_logger(use_logstash=True):
     logging.setLoggerClass(CustomLogger)
     log = logging.getLogger('subtocall')
     log.setLevel(logging.DEBUG)
-    if use_logstash:
-        log.addHandler(logstash.TCPLogstashHandler(
-            LOGSTASH_HOST, LOGSTASH_PORT, version=1))
 
-    formatter = logging.Formatter(
-        "%(asctime)s [%(levelname)-8s] %(module)s%(lineno)-3s %(message)s")
+    format = "%(asctime)s [%(levelname)-8s] %(module)s %(lineno)s %(message)s"
+    formatter = logging.Formatter(format)
     consoleHandler = logging.StreamHandler(sys.stdout)
     consoleHandler.setFormatter(formatter)
     log.addHandler(consoleHandler)
-    coloredlogs.install(
-        level='DEBUG', logger=log,
-        stream=sys.stdout,
-        fmt="%(asctime)s [%(levelname)-8s] %(module)-10s %(lineno)-3s %(message)s")
+
+    if COLORED_LOGS:
+        coloredlogs.install(
+            level='DEBUG', logger=log, stream=sys.stdout, fmt=format)
 
     # Twisted logger which logs deeper failures
     logt = logging.getLogger('twisted')

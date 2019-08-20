@@ -23,3 +23,8 @@ REDIS_HOST = os.getenv('REDIS_HOST', 'redis-queue')
 # Port of redis
 REDIS_PORT = os.getenv('REDIS_PORT', 6379)
 REDIS_PORT = int(REDIS_PORT)
+
+# Colored logs
+COLORED_LOGS = os.getenv('COLORED_LOGS', True)
+if COLORED_LOGS in ('false', 'False', '0'):
+    COLORED_LOGS = False

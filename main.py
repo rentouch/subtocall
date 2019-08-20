@@ -17,7 +17,7 @@ from utils import BACKEND_USERNAME
 from utils import CROSSBAR_REALM
 from utils import USE_REDIS_MQ
 from rqueue import queue
-log = log.init_logger(use_logstash=True)
+log = log.init_logger()
 from metrics import REDIS_PUSHS
 
 log.info("***** SubToCall started *****")

@@ -11,7 +11,7 @@ steps:
     - git fetch --tags
 
   - name: generate-build-tags
-    image: jegger/drone-build-tag:0.0.3
+    image: jegger/drone-build-tag:0.0.6
     pull: true
     commands:
       - build-tags.sh --py-module version
@@ -24,4 +24,4 @@ steps:
       password:
         from_secret: docker_password
       registry: harbor.piplanning.io
-      repo: harbor.piplanning.io/k8sprod/subtocall
+      repo: harbor3.piplanning.io/stable/subtocall

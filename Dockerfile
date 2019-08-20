@@ -18,5 +18,8 @@ RUN venv/bin/pip install -r requirements.txt
 # Copy authserver files to container /usr/local/bin/subtocall
 COPY . .
 
+# Disable colored logs as they make parsing very hard
+ENV COLORED_LOGS false
+
 # Run authserver
 CMD ["venv/bin/python", "main.py"]

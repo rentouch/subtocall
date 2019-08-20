@@ -4,7 +4,7 @@
 # This file builds a docker image and tags it
 # after that it uploads the image to our private docker repository
 NAME="pi-subtocall"
-HUB="harbor2.piplanning.io"
+HUB="harbor3.piplanning.io"
 prod_flag=false
 on_prem_flag=false
 username='rt-uploader'
