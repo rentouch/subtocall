@@ -173,27 +173,39 @@ if __name__ == "__main__":
     class MyClientFactory(websocket.WampWebSocketClientFactory,
                           ReconnectingClientFactory):
         maxDelay = 30
-        last_connector = None
+        # Exit application if we fail to connect more than n-times in a row.
+        # We expect the orchestrator to restart this app properly.
+        failed_max = 4
+        failed_counter = 0
 
         def __init__(self, *args, **kwargs):
             websocket.WampWebSocketClientFactory.__init__(self, *args, **kwargs)
 
         def startedConnecting(self, connector):
             log.debug("Start connection attempt")
-            self.last_connector = connector
             ReconnectingClientFactory.startedConnecting(self, connector)
 
         def clientConnectionFailed(self, connector, reason):
-            self.last_connector = connector
+            if self.failed_counter >= self.failed_max:
+                log.info(
+                    f'failed too many times '
+                    f'{self.failed_counter}/{self.failed_max}: '
+                    f'Stop reactor and exit')
+                reactor.stop()
+                return
+            self.failed_counter += 1
             log.error("Client connection failed. Will try again...")
             ReconnectingClientFactory.clientConnectionFailed(
                 self, connector, reason)
 
         def clientConnectionLost(self, connector, reason):
-            self.last_connector = connector
             log.error("Client connection lost. Will try to reconnect...")
             ReconnectingClientFactory.clientConnectionLost(
                 self, connector, reason)
+
+        def resetDelay(self):
+            ReconnectingClientFactory.resetDelay(self)
+            self.failed_counter = 0
 
     # create a WAMP application session factory
     component_config = types.ComponentConfig(realm=CROSSBAR_REALM)
