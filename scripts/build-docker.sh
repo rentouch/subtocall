@@ -32,15 +32,15 @@ done
 # Password check
 if [ -z "$password" ]
 then
-      echo "[ERROR]: Please pass a password!"
-      print_usage
-      exit
+    printf "Password for $HUB ($username):"
+    read -s password
+    stty echo
 fi
 
 # Set project on harbor repo
 PROJECT="test"
 if [ "$prod_flag" = true ] ; then
-    PROJECT="k8sprod"
+    PROJECT="stable"
 fi
 if [ "$on_prem_flag" = true ] ; then
     PROJECT="pip"
