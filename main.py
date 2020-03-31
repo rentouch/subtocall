@@ -46,12 +46,20 @@ class MyComponent(ApplicationSession):
         log.info("Successfully connected and authenticated on server")
         registrations = yield self.call("wamp.registration.list")
         for reg_type in registrations:
-                for reg_id in registrations[reg_type]:
+            for reg_id in registrations[reg_type]:
+                try:
                     reg = yield self.call("wamp.registration.get", reg_id)
-                    if self.matches_pattern(reg['uri']):
-                        self.start_track(reg_id, reg['uri'])
-        yield self.subscribe(self.on_create, 'wamp.registration.on_create')
-        yield self.subscribe(self.on_delete, 'wamp.registration.on_delete')
+                except Exception as e:
+                    log.exception(e)
+                    self.leave()
+                if self.matches_pattern(reg['uri']):
+                    self.start_track(reg_id, reg['uri'])
+        try:
+            yield self.subscribe(self.on_create, 'wamp.registration.on_create')
+            yield self.subscribe(self.on_delete, 'wamp.registration.on_delete')
+        except Exception as e:
+            log.exception(e)
+            self.leave()
 
         # Subscribe to all events
         yield self.subscribe(
@@ -77,7 +85,7 @@ class MyComponent(ApplicationSession):
                'main_topic': target_uri.split('.')[-2],
                'procedure': target_uri.split('.')[-1].replace('SUB_', '')}
         self.subscriptions.append(reg)
-        log.debug('start tracking %s %s' % (reg_id, reg['target_uri']))
+        log.debug('start tracking %s %s %s %s' % (reg_id, reg['target_uri'], reg['main_topic'], reg['procedure']))
 
     def stop_track(self, reg_id):
         for reg in self.subscriptions[:]:
@@ -95,12 +103,15 @@ class MyComponent(ApplicationSession):
             company = topic_parts[5]
             procedure = topic_parts[-1]
             api_version = topic_parts[3]
+
             if len(topic_parts) == 9:
                 main_topic = 'board'
             elif len(topic_parts) == 8:
                 main_topic = 'session'
+            elif len(topic_parts) == 7:
+                main_topic = 'monit'
             else:
-                returnValue(False)
+                return False
 
             part_id = topic_parts[-2]
             for sub in self.subscriptions:
@@ -128,6 +139,10 @@ class MyComponent(ApplicationSession):
                         else:
                             data['kwargs']['session_id'] = part_id
                         r_key = '%s_%s' % (api_version, 'piserver')
+                        # Use different key for monitoring
+                        if main_topic == 'monit':
+                            r_key = 'monit'
+                        # log.debug(f"push to redis: {r_key, data}")
                         yield queue.put(r_key,
                                         pickle.dumps(data))
                         REDIS_PUSHS.inc()
@@ -194,6 +209,7 @@ if __name__ == "__main__":
                 reactor.stop()
                 return
             self.failed_counter += 1
+            log.error(f"failed {self.failed_counter} / {self.failed_max}")
             log.error("Client connection failed. Will try again...")
             ReconnectingClientFactory.clientConnectionFailed(
                 self, connector, reason)
