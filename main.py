@@ -172,10 +172,13 @@ class MyComponent(ApplicationSession):
 
     def onClose(self, wasClean):
         super(MyComponent, self).onClose(wasClean)
-        log.info("onClose: Remove all rooms / sessions out of memory")
+        log.info(f"onClose: wasClean: {wasClean}")
 
     def onLeave(self, details):
         log.info("Client session left: {}".format(details))
+        log.debug(f'wasClean: {self.wasClean}')
+        log.debug(f'wasNotCleanReason: {self.wasNotCleanReason}')
+        log.debug(f'droppedByMe: {self.droppedByMe}')
         if details.reason == "wamp.error.authentication_failed":
             reactor.callLater(5, self.onConnect)
         self.disconnect()
