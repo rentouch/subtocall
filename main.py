@@ -9,6 +9,7 @@ from autobahn.websocket.util import parse_url
 from autobahn.wamp.types import SubscribeOptions
 from autobahn.twisted import websocket
 from autobahn.wamp import types
+from autobahn.twisted.util import sleep
 from twisted.internet import reactor
 from autobahn.wamp import auth
 from utils import WAMP_URL
@@ -44,6 +45,13 @@ class MyComponent(ApplicationSession):
     @inlineCallbacks
     def onJoin(self, details):
         log.info("Successfully connected and authenticated on server")
+
+        # 1. wait and log
+        for i in range(120):
+            log.debug(f'Sleep {i}/120')
+            yield sleep(1)
+        log.debug('Done sleeping...')
+
         registrations = yield self.call("wamp.registration.list")
         for reg_type in registrations:
             for reg_id in registrations[reg_type]:
@@ -175,9 +183,7 @@ class MyComponent(ApplicationSession):
         log.info(f"onClose: wasClean: {wasClean}")
 
     def onLeave(self, details):
-        log.debug("just before wtf")
         log.info("Client session left: {}".format(details))
-        log.debug("wtf?")
         try:
             log.debug(f'wasClean: {self._transport.wasClean}')
             log.debug(f'wasNotCleanReason: {self._transport.wasNotCleanReason}')
@@ -242,7 +248,7 @@ if __name__ == "__main__":
     # You can set a custom URL by setting the env. variable WAMP_URL.
     # e.g. WAMP_URL=ws://localhost:8091 python main.py
     transport_factory = MyClientFactory(_get_session, url=WAMP_URL)
-    transport_factory.setProtocolOptions(autoPingInterval=2, autoPingTimeout=4)
+    transport_factory.setProtocolOptions(autoPingInterval=8, autoPingTimeout=15)
 
     # Setup proper logging from Autobahn
     import txaio
