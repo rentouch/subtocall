@@ -237,7 +237,7 @@ if __name__ == "__main__":
     # You can set a custom URL by setting the env. variable WAMP_URL.
     # e.g. WAMP_URL=ws://localhost:8091 python main.py
     transport_factory = MyClientFactory(_get_session, url=WAMP_URL)
-    transport_factory.setProtocolOptions(autoPingInterval=2, autoPingTimeout=4)
+    transport_factory.setProtocolOptions(autoPingInterval=10, autoPingTimeout=60)
 
     # Setup proper logging from Autobahn
     import txaio
