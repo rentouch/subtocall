@@ -176,9 +176,12 @@ class MyComponent(ApplicationSession):
 
     def onLeave(self, details):
         log.info("Client session left: {}".format(details))
-        log.debug(f'wasClean: {self.wasClean}')
-        log.debug(f'wasNotCleanReason: {self.wasNotCleanReason}')
-        log.debug(f'droppedByMe: {self.droppedByMe}')
+        try:
+            log.debug(f'wasClean: {self.wasClean}')
+            log.debug(f'wasNotCleanReason: {self.wasNotCleanReason}')
+            log.debug(f'droppedByMe: {self.droppedByMe}')
+        except Exception as e:
+            log.exception(e)
         if details.reason == "wamp.error.authentication_failed":
             reactor.callLater(5, self.onConnect)
         self.disconnect()
