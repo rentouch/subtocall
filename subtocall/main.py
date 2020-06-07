@@ -1,4 +1,3 @@
-import log
 import json
 from autobahn.twisted.wamp import ApplicationSession
 from twisted.internet.protocol import ReconnectingClientFactory
@@ -10,14 +9,15 @@ from autobahn.twisted import websocket
 from autobahn.wamp import types
 from twisted.internet import reactor
 from autobahn.wamp import auth
-from utils import WAMP_URL
-from utils import BACKEND_SECRET
-from utils import BACKEND_USERNAME
-from utils import CROSSBAR_REALM
-from utils import USE_REDIS_MQ
-from rqueue import queue
+from subtocall.utils import WAMP_URL
+from subtocall.utils import BACKEND_SECRET
+from subtocall.utils import BACKEND_USERNAME
+from subtocall.utils import CROSSBAR_REALM
+from subtocall.utils import USE_REDIS_MQ
+from subtocall.rqueue import queue
+from subtocall import log
 log = log.init_logger()
-from metrics import REDIS_PUSHS
+from subtocall.metrics import REDIS_PUSHS
 
 log.info("***** SubToCall started *****")
 

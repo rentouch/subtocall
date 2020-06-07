@@ -2,7 +2,7 @@ import os
 import sys
 import logging
 import coloredlogs
-from utils import COLORED_LOGS
+from subtocall.utils import COLORED_LOGS
 
 
 def init_logger():

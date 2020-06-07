@@ -22,4 +22,4 @@ COPY . .
 ENV COLORED_LOGS false
 
 # Run authserver
-CMD ["python", "main.py"]
+CMD ["python", "-m", "subtocall.main"]

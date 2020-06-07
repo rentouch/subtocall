@@ -1,8 +1,8 @@
 import logging
 import txredisapi as redis
 from twisted.internet.defer import inlineCallbacks, returnValue
-from utils import REDIS_HOST
-from utils import REDIS_PORT
+from subtocall.utils import REDIS_HOST
+from subtocall.utils import REDIS_PORT
 log = logging.getLogger("subtocall")
 
 
