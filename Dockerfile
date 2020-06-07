@@ -1,19 +1,19 @@
-FROM ubuntu:18.04
+FROM python:3.8-alpine
 
-# Install pip and virtualenv
-RUN apt-get update && apt-get install -y python3 curl python3-distutils
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-RUN python3 get-pip.py
-RUN pip3 install virtualenv
+# Install build dependencies
+RUN apk add --no-cache libressl-dev
+RUN apk add --virtual .build_deps --no-cache gcc libffi-dev musl-dev python3-dev
 
 WORKDIR /usr/local/bin/subtocall
 
 # Copy only requirements file
 COPY ./requirements.txt .
 
-# Create virtualenv
-RUN virtualenv -p python3 venv
-RUN venv/bin/pip install -r requirements.txt
+# Install python dependenices
+RUN pip install -r requirements.txt
+
+# We can remove the build dependencies again
+RUN apk del .build_deps
 
 # Copy authserver files to container /usr/local/bin/subtocall
 COPY . .
@@ -22,4 +22,4 @@ COPY . .
 ENV COLORED_LOGS false
 
 # Run authserver
-CMD ["venv/bin/python", "main.py"]
+CMD ["python", "main.py"]

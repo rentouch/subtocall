@@ -1,9 +1,8 @@
-import pickle
-
 import log
+import json
 from autobahn.twisted.wamp import ApplicationSession
 from twisted.internet.protocol import ReconnectingClientFactory
-from twisted.internet.defer import inlineCallbacks, returnValue
+from twisted.internet.defer import inlineCallbacks
 from autobahn.wamp.exception import ApplicationError
 from autobahn.websocket.util import parse_url
 from autobahn.wamp.types import SubscribeOptions
@@ -143,8 +142,7 @@ class MyComponent(ApplicationSession):
                         if main_topic == 'monit':
                             r_key = 'monit'
                         # log.debug(f"push to redis: {r_key, data}")
-                        yield queue.put(r_key,
-                                        pickle.dumps(data))
+                        yield queue.put(r_key, json.dumps(data))
                         REDIS_PUSHS.inc()
                     else:
                         # Call target uri with arguments

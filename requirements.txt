@@ -1,5 +1,5 @@
-Twisted==19.10.0
-autobahn==20.2.1
+Twisted==20.3.0
+autobahn==20.4.3
 pyopenssl>=19.1.0
 service-identity==18.1.0
 coloredlogs==14.0
