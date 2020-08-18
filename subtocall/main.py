@@ -98,6 +98,9 @@ class MyComponent(ApplicationSession):
         try:
             wamp_details = kwargs.pop('wamp_details')
             source_uri = wamp_details.topic
+            if source_uri == 'ch.rentouch.piplanning.heartbeat':
+                return False
+
             topic_parts = source_uri.split('.')
             company = topic_parts[5]
             procedure = topic_parts[-1]
