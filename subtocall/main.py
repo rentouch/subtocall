@@ -98,6 +98,7 @@ class MyComponent(ApplicationSession):
         try:
             wamp_details = kwargs.pop('wamp_details')
             source_uri = wamp_details.topic
+            authid = wamp_details.publisher_authid
             if source_uri == 'ch.rentouch.piplanning.heartbeat':
                 return False
 
@@ -135,6 +136,7 @@ class MyComponent(ApplicationSession):
                                 'main_topic': main_topic,
                                 'args': args,
                                 'from_backend': from_backend,
+                                'authid': authid,
                                 'kwargs': kwargs}
                         if main_topic == 'board':
                             data['kwargs']['board_id'] = part_id
