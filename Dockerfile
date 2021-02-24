@@ -9,11 +9,12 @@ WORKDIR /usr/local/bin/subtocall
 # Copy only requirements file
 COPY ./requirements.txt .
 
-# Install python dependenices
-RUN pip install -r requirements.txt
-
-# We can remove the build dependencies again
-RUN apk del .build_deps
+# Install build dependencies
+RUN apk update \
+    && apk add --no-cache git \
+    && apk add --no-cache --virtual .build-deps libressl-dev musl-dev libffi-dev gcc g++ rust cargo python3-dev\
+    && pip install --no-cache-dir -r requirements.txt \
+    && apk del --no-cache .build-deps
 
 # Copy authserver files to container /usr/local/bin/subtocall
 COPY . .

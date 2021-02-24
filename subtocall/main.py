@@ -66,7 +66,12 @@ class MyComponent(ApplicationSession):
             topic='ch.rentouch.piplanning',
             options=SubscribeOptions(match=u"prefix",
                                      details_arg='wamp_details'))
-        log.debug("Subscribed to wamp procedure")
+        number_of_procedures = len(self.subscriptions)
+        log.debug(f"Subscribed to {number_of_procedures} wamp procedures")
+        if number_of_procedures < 2:
+            log.erro("Was not able to track at least 2 WAMP procedures -> exit!")
+            reactor.stop()
+
 
     @inlineCallbacks
     def on_create(self, _, create_info):
