@@ -51,7 +51,7 @@ VERSION="$(python -c 'from subtocall import version; print version.__version__')
 echo Building version: $VERSION
 
 # Create docker image
-docker build -t $NAME .
+docker build --no-cache --pull -t $NAME .
 docker tag $NAME $NAME:$VERSION
 
 # Login to our remote docker hub

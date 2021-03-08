@@ -1,9 +1,5 @@
 FROM python:3.8-alpine
 
-# Install build dependencies
-RUN apk add --no-cache libressl-dev
-RUN apk add --virtual .build_deps --no-cache gcc libffi-dev musl-dev python3-dev
-
 WORKDIR /usr/local/bin/subtocall
 
 # Copy only requirements file
