@@ -1,7 +1,7 @@
-Twisted==20.3.0
-autobahn==20.4.3
-pyopenssl>=19.1.0
+Twisted==21.2.0
+autobahn==21.3.1
+pyopenssl>=20.0.1
 service-identity==18.1.0
-coloredlogs==14.0
+coloredlogs==15.0
 txredisapi==1.4.7
 prometheus_async[twisted]==19.2.0
