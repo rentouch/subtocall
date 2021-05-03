@@ -1,4 +1,5 @@
 import json
+import time
 from autobahn.twisted.wamp import ApplicationSession
 from twisted.internet.protocol import ReconnectingClientFactory
 from twisted.internet.defer import inlineCallbacks
@@ -17,7 +18,7 @@ from subtocall.utils import USE_REDIS_MQ
 from subtocall.rqueue import queue
 from subtocall import log
 log = log.init_logger()
-from subtocall.metrics import REDIS_PUSHS
+from subtocall.metrics import REDIS_PUSHS, SUB_RECV_TIME
 
 log.info("***** SubToCall started *****")
 
@@ -151,9 +152,12 @@ class MyComponent(ApplicationSession):
                         # Use different key for monitoring
                         if main_topic == 'monit':
                             r_key = 'monit'
-                        # log.debug(f"push to redis: {r_key, data}")
+                            SUB_RECV_TIME.observe(time.time()-args[0])
+                            REDIS_PUSHS.inc()
+                        else:
+                            REDIS_PUSHS.inc()
                         yield queue.put(r_key, json.dumps(data))
-                        REDIS_PUSHS.inc()
+
                     else:
                         # Call target uri with arguments
                         # log.debug("-> %s, %s %s, %s, backend=%s" %
