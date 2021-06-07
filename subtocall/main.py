@@ -70,7 +70,7 @@ class MyComponent(ApplicationSession):
         number_of_procedures = len(self.subscriptions)
         log.debug(f"Subscribed to {number_of_procedures} wamp procedures")
         if number_of_procedures < 2:
-            log.erro("Was not able to track at least 2 WAMP procedures -> exit!")
+            log.error("Was not able to track at least 2 WAMP procedures -> exit!")
             reactor.stop()
 
 

@@ -47,7 +47,7 @@ if [ "$on_prem_flag" = true ] ; then
 fi
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-VERSION="$(python -c 'from subtocall import version; print version.__version__')"
+VERSION="$(python -c 'from subtocall import version; print(version.__version__)')"
 echo Building version: $VERSION
 
 # Create docker image
