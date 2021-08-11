@@ -8,7 +8,7 @@ COPY ./requirements.txt .
 # Install build dependencies
 RUN apk update \
     && apk add --no-cache git \
-    && apk add --no-cache --virtual .build-deps libressl-dev musl-dev libffi-dev gcc g++ rust cargo python3-dev\
+    && apk add --no-cache --virtual .build-deps openssl-dev icu-dev musl-dev libffi-dev gcc g++ rust cargo python3-dev\
     && pip install --no-cache-dir -r requirements.txt \
     && apk del --no-cache .build-deps
 
