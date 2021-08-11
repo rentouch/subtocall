@@ -1,3 +1,4 @@
+import re
 import json
 import time
 from autobahn.twisted.wamp import ApplicationSession
@@ -180,7 +181,7 @@ class MyComponent(ApplicationSession):
 
     @staticmethod
     def matches_pattern(uri):
-        return uri.split('.')[-1].startswith('SUB_')
+        return re.match("SUB_", uri.split('.')[-1], re.IGNORECASE)
 
     def onClose(self, wasClean):
         super(MyComponent, self).onClose(wasClean)
