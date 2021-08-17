@@ -89,7 +89,7 @@ class MyComponent(ApplicationSession):
         reg = {'reg_id': reg_id,
                'target_uri': target_uri,
                'main_topic': target_uri.split('.')[-2],
-               'procedure': target_uri.split('.')[-1].replace('SUB_', '')}
+               'procedure': re.sub(r'sub_', '', target_uri.split('.')[-1], flags=re.IGNORECASE)}
         self.subscriptions.append(reg)
         log.debug('start tracking %s %s %s %s' % (reg_id, reg['target_uri'], reg['main_topic'], reg['procedure']))
 
